@@ -331,3 +331,7 @@ Temporary Items
 
 ## User settings
 xcuserdata/
+
+# Project IO
+inputs/
+outputs/
