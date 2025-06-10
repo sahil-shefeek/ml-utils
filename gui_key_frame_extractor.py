@@ -39,6 +39,8 @@ def extract_keyframes_worker(video_path, output_folder, threshold, status_queue,
         if not success:
             raise IOError("Could not read the first frame from the video.")
 
+        processed_frame_count = 1 # Initialize processed_frame_count for the first frame
+
         prev_frame_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
         
         # Filename generation for the first frame
@@ -46,11 +48,11 @@ def extract_keyframes_worker(video_path, output_folder, threshold, status_queue,
         if append_date:
             first_frame_name_parts.append(datetime.now().strftime("%Y%m%d") + "_")
         if append_frame_number:
-            first_frame_name_parts.append("frame_00000001_")
+            first_frame_name_parts.append(f"frame_{processed_frame_count:08d}_") # Use processed_frame_count
         # Always append a unique ID for the first frame if no other specifier is present,
         # or if only date is present (to distinguish multiple runs on the same day).
         if not append_frame_number:
-             first_frame_name_parts.append("id_00000001_")
+             first_frame_name_parts.append(f"origframe_{processed_frame_count:08d}_") # Use processed_frame_count
 
         # Clean up potential trailing underscore if it's the last part
         if first_frame_name_parts[-1].endswith('_'):
@@ -60,7 +62,6 @@ def extract_keyframes_worker(video_path, output_folder, threshold, status_queue,
         first_frame_path = os.path.join(output_folder, first_frame_filename)
         cv2.imwrite(first_frame_path, prev_frame)
         
-        processed_frame_count = 1
         keyframe_count = 1
         total_frames = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
         if total_frames == 0:
@@ -96,7 +97,7 @@ def extract_keyframes_worker(video_path, output_folder, threshold, status_queue,
                 # Ensure uniqueness if neither date nor frame number is appended,
                 # or if only date is present (to distinguish multiple runs on the same day for non-frame-numbered files).
                 if not append_frame_number:
-                    filename_parts.append(f"id_{keyframe_count:08d}_")
+                    filename_parts.append(f"origframe_{processed_frame_count:08d}_") # Use original video's frame number
                 
                 # Clean up potential trailing underscore if it's the last part
                 if filename_parts[-1].endswith('_'):
