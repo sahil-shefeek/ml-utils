@@ -333,6 +333,10 @@ Temporary Items
 xcuserdata/
 
 # Project IO
+input/
 inputs/
+output/
 outputs/
+extracted/
+frames/
 extracted_keyframes/
